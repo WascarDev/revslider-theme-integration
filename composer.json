@@ -1,0 +1,23 @@
+{
+  "name": "wascardev/revslider-theme-integration",
+  "description": "WordPress to helper Slider Revolution integration in WordPress Theme",
+  "minimum-stability": "stable",
+  "license": "GPL-3.0-or-later",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Adrien Jussak",
+      "email": "adrien.jussak@wascardev.com"
+    }
+  ],
+  "repositories":[
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": ">=7.3",
+    "johnpbloch/wordpress": ">=5.6"
+  }
+}
