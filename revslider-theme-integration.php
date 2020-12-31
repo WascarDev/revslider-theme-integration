@@ -1,8 +1,13 @@
 <?php
 
-class RevSliderThemeIntegration {
+require 'RevSliderThemeMeta.php';
+require 'RevSliderThemeMetaTaxonomy.php';
+
+class RevSliderThemeIntegration
+{
 
     private static ?RevSliderThemeIntegration $instance = null;
+    private static $metas = ['taxonomy' => '', 'post' => ''];
 
     /**
      * RevSliderThemeIntegration constructor.
@@ -12,37 +17,38 @@ class RevSliderThemeIntegration {
         add_action('init', [$this, 'init']);
     }
 
-    public function init() {
+    public function init()
+    {
 
     }
 
-    public function getConfig() {
-        $r = get_option('revslider_theme_integration');
+    public function getConfig()
+    {
+        return get_option('revslider_theme_integration');
+    }
 
-        if($r) {
-            $r = ['taxonomies' => [], 'posts' => [], 'defaultSlider' => ''];
+    public function getContentMeta($content_type = "", $args = null)
+    {
+        if($content_type === '') {
+            if(is_single()) {
+                $content_type = 'post';
+            }
         }
 
-        return $r;
-    }
-
-    /**
-     * Check if a taxonomy is managed by the plugin
-     *
-     * @param $taxonomy : id of taxonomy
-     * @return bool : true if the taxonomy is managed by the plugin
-     */
-    public function hasTaxonomyManaged($taxonomy): bool {
-        return in_array($taxonomy, self::getConfig()['taxonomies']);
-    }
-
-    public function getTaxonomySlider($taxonomy, $slug) {
+        switch ($content_type) {
+            case 'post':
+                return new RevSliderThemeMetaPost($args);
+            case 'taxonomy':
+                return new RevSliderThemeMetaTaxonomy($args);
+            default:
+                return null;
+        }
 
     }
 
     public static function getInstance(): RevSliderThemeIntegration
     {
-        if(self::$instance == null) {
+        if (self::$instance == null) {
             self::$instance = new RevSliderThemeIntegration();
         }
 

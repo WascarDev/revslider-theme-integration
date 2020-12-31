@@ -1,6 +1,6 @@
 {
   "name": "wascardev/revslider-theme-integration",
-  "description": "WordPress to helper Slider Revolution integration in WordPress Theme",
+  "description": "WordPress helper for Slider Revolution integration in WordPress Theme",
   "minimum-stability": "stable",
   "license": "GPL-3.0-or-later",
   "type": "project",
