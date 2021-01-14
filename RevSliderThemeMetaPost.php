@@ -3,19 +3,22 @@
 
 class RevSliderThemeMetaPost extends RevSliderThemeMeta
 {
-    private WP_Post $post;
-
-    /**
-     * RevSliderThemeMetaPost constructor.
-     * @param $args
-     */
-    public function __construct($args = null)
+    public function __construct()
     {
-        $this->post = new WP_Post();
+        parent::__construct('post');
     }
 
-    public function getSliderId()
+    public function getSliderId(int $contentId = -1): int
     {
-        // TODO: Implement getSliderId() method.
+        if ($contentId == -1) {
+            $contentId = get_the_ID();
+        }
+
+        return get_post_meta($contentId, 'revslderintegration_slider_id', true);
+    }
+
+    public function contextIsManageable(): bool
+    {
+        return is_single() || is_page();
     }
 }
