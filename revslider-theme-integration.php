@@ -25,6 +25,10 @@ class RevSliderThemeIntegration
     public function init()
     {
         add_action('customize_register', [$this, 'setupCustomize']);
+
+        foreach ($this->metas as $meta) {
+            $meta->init();
+        }
     }
 
     public function setupCustomize(WP_Customize_Manager $wp_customize)
@@ -54,7 +58,7 @@ class RevSliderThemeIntegration
         foreach ($this->metas as $meta) {
             $settings_id = 'revsliderintegration_options[' . $meta->getManagedType() . ']';
 
-            $wp_customize->add_setting($settings_id, array('default' => $meta->getDefaultElements(), 'sanitize_callback' => array($this, 'sanitizeContentTypeSelector')));
+            $wp_customize->add_setting($settings_id, array('default' => $meta->getDefaultElements(), 'type' => 'option', 'capability' => 'edit_theme_options', 'sanitize_callback' => array($this, 'sanitizeContentTypeSelector')));
             $elements = $meta->getElements();
             $wp_customize->add_control(
                 new RevSliderIntegration_Control_Checkbox_Multiple(

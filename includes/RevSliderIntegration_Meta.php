@@ -27,6 +27,17 @@ abstract class RevSliderIntegration_Meta
         return $this->managed_type === $type;
     }
 
+    public function getSelectedElements()
+    {
+        $options = get_option('revsliderintegration_options');
+
+        if (isset($options[$this->getManagedType()])) {
+            return $options[$this->getManagedType()];
+        }
+
+        return array();
+    }
+
     public abstract function getElements(): array;
 
     public abstract function getDefaultElements(): array;
@@ -34,7 +45,6 @@ abstract class RevSliderIntegration_Meta
     public abstract function getCustomizeTitle(): string;
 
     public abstract function init();
-
 
     public function getSlider(int $contentId = -1): ?RevSlider
     {
