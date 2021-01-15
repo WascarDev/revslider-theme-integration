@@ -1,14 +1,17 @@
 <?php
+/**
+ * Plugin Name: RevSlider Theme Integration
+ */
 
-require 'RevSliderThemeMeta.php';
-require 'RevSliderThemeMetaTaxonomy.php';
-require 'RevSliderThemeMetaPost.php';
+require 'includes/RevSliderIntegration_Meta.php';
+require 'includes/RevSliderIntegration_MetaPost.php';
+require 'includes/RevSliderIntegration_MetaTaxonomy.php';
 
 class RevSliderThemeIntegration
 {
 
     private static ?RevSliderThemeIntegration $instance = null;
-    private static array $metas;
+    private array $metas;
 
     /**
      * RevSliderThemeIntegration constructor.
@@ -16,7 +19,7 @@ class RevSliderThemeIntegration
     private function __construct()
     {
         add_action('init', [$this, 'init']);
-        RevSliderThemeIntegration::$metas = [new RevSliderThemeMetaTaxonomy(), new RevSliderThemeMetaPost()];
+        $this->metas = [new RevSliderIntegration_MetaTaxonomy(), new RevSliderIntegration_MetaPost()];
     }
 
     public function init()
@@ -26,6 +29,8 @@ class RevSliderThemeIntegration
 
     public function setupCustomize(WP_Customize_Manager $wp_customize)
     {
+        require_once('includes/RevSliderIntegration_Control_Checkbox_Multiple.php');
+
         $wp_customize->add_section('revsliderintegration_options', array('title' => __('RevSlider Integration')));
 
         $wp_customize->add_setting('revsliderintegration_options[default_slider]',
@@ -45,14 +50,38 @@ class RevSliderThemeIntegration
             'type' => 'select',
             'choices' => $slider_list
         ));
+
+        foreach ($this->metas as $meta) {
+            $settings_id = 'revsliderintegration_options[' . $meta->getManagedType() . ']';
+
+            $wp_customize->add_setting($settings_id, array('default' => $meta->getDefaultElements(), 'sanitize_callback' => array($this, 'sanitizeContentTypeSelector')));
+            $elements = $meta->getElements();
+            $wp_customize->add_control(
+                new RevSliderIntegration_Control_Checkbox_Multiple(
+                    $wp_customize,
+                    'slider_managed_' . $meta->getManagedType() . '_control',
+                    array(
+                        'settings' => $settings_id,
+                        'section' => 'revsliderintegration_options',
+                        'label' => $meta->getCustomizeTitle(),
+                        'choices' => $elements
+                    )
+                )
+            );
+        }
+    }
+
+    public function sanitizeContentTypeSelector( $values ) {
+        $multi_values = !is_array( $values ) ? explode( ',', $values ) : $values;
+
+        return !empty( $multi_values ) ? array_map( 'sanitize_text_field', $multi_values ) : array();
     }
 
     public function getDefaultSlider(): ?RevSlider
     {
         $option = get_option('revsliderintegration_options');
 
-        if(!empty($option) && isset($option['default_slider']))
-        {
+        if (!empty($option) && isset($option['default_slider'])) {
             $id = $option['default_slider'];
             $slider = new RevSlider();
             $list = $slider->get_sliders();
@@ -69,7 +98,7 @@ class RevSliderThemeIntegration
 
     public function getSlider($contentType = '', $id = '')
     {
-        foreach (RevSliderThemeIntegration::$metas as $meta) {
+        foreach ($this->metas as $meta) {
             if ($contentType == '') {
                 if ($meta->contextIsManageable())
                     $contentType = $meta->getManagedType();

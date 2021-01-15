@@ -1,6 +1,6 @@
 <?php
 
-abstract class RevSliderThemeMeta
+abstract class RevSliderIntegration_Meta
 {
     private string $managed_type;
 
@@ -15,7 +15,8 @@ abstract class RevSliderThemeMeta
 
     public abstract function getSliderId(int $contentId = -1): int;
 
-    public function getManagedType(): string {
+    public function getManagedType(): string
+    {
         return $this->managed_type;
     }
 
@@ -25,6 +26,15 @@ abstract class RevSliderThemeMeta
     {
         return $this->managed_type === $type;
     }
+
+    public abstract function getElements(): array;
+
+    public abstract function getDefaultElements(): array;
+
+    public abstract function getCustomizeTitle(): string;
+
+    public abstract function init();
+
 
     public function getSlider(int $contentId = -1): ?RevSlider
     {
