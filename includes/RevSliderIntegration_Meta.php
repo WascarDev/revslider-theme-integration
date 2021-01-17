@@ -13,7 +13,7 @@ abstract class RevSliderIntegration_Meta
         $this->managed_type = $managed_type;
     }
 
-    public abstract function getSliderId(int $contentId = -1): int;
+    public abstract function getSliderId($contentId = ""): string;
 
     public function getManagedType(): string
     {
@@ -46,12 +46,12 @@ abstract class RevSliderIntegration_Meta
 
     public abstract function init();
 
-    public function getSlider(int $contentId = -1): ?RevSlider
+    public function getSlider($contentId = ""): ?RevSliderSlider
     {
         $revslider = new RevSlider();
         $expected_id = $this->getSliderId($contentId);
 
-        if ($expected_id != -1) {
+        if ($expected_id != "") {
             foreach ($revslider->get_sliders() as $slider) {
                 if ($slider->get_id() === $expected_id) {
                     return $slider;
@@ -60,13 +60,6 @@ abstract class RevSliderIntegration_Meta
         }
 
         return null;
-    }
-
-    public function displaySlider(int $contentId = -1): void
-    {
-        $slider = $this->getSlider($contentId);
-
-        echo do_shortcode('[rev_slider alias="' . $slider->get_alias() . '"][/rev_slider]');
     }
 
 

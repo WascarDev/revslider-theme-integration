@@ -11,9 +11,9 @@ class RevSliderIntegration_MetaPost extends RevSliderIntegration_Meta
         parent::__construct('post');
     }
 
-    public function getSliderId(int $contentId = -1): int
+    public function getSliderId($contentId = ""): string
     {
-        if ($contentId == -1) {
+        if ($contentId == "") {
             $contentId = get_the_ID();
         }
 

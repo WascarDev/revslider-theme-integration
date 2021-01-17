@@ -75,18 +75,20 @@ class RevSliderThemeIntegration
         }
     }
 
-    public function sanitizeContentTypeSelector( $values ) {
-        $multi_values = !is_array( $values ) ? explode( ',', $values ) : $values;
+    public function sanitizeContentTypeSelector($values)
+    {
+        $multi_values = !is_array($values) ? explode(',', $values) : $values;
 
-        return !empty( $multi_values ) ? array_map( 'sanitize_text_field', $multi_values ) : array();
+        return !empty($multi_values) ? array_map('sanitize_text_field', $multi_values) : array();
     }
 
-    public function getDefaultSlider(): ?RevSlider
+    public function getDefaultSlider(): ?RevSliderSlider
     {
         $option = get_option('revsliderintegration_options');
 
         if (!empty($option) && isset($option['default_slider'])) {
             $id = $option['default_slider'];
+
             $slider = new RevSlider();
             $list = $slider->get_sliders();
 
@@ -100,7 +102,7 @@ class RevSliderThemeIntegration
         return null;
     }
 
-    public function getSlider($contentType = '', $id = '')
+    public function getSlider($contentType = '', $id = ''): ?RevSliderSlider
     {
         foreach ($this->metas as $meta) {
             if ($contentType == '') {
@@ -109,11 +111,24 @@ class RevSliderThemeIntegration
             }
 
             if ($meta->typeIsManageable($contentType)) {
-                return $meta->getSlider($id);
+                $s = $meta->getSlider($id);
+                if($s != null)
+                {
+                    return $s;
+                }
             }
         }
 
         return $this->getDefaultSlider();
+    }
+
+    public function displaySlider($contentId = ""): void
+    {
+        $slider = $this->getSlider($contentId);
+
+        if ($slider != null) {
+            echo do_shortcode('[rev_slider alias="' . $slider->get_alias() . '"][/rev_slider]');
+        }
     }
 
     public static function getInstance(): RevSliderThemeIntegration

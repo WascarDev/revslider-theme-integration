@@ -14,9 +14,9 @@ class RevSliderIntegration_MetaTaxonomy extends RevSliderIntegration_Meta
         parent::__construct('taxonomy');
     }
 
-    public function getSliderId(int $contentId = -1): int
+    public function getSliderId($contentId = ""): string
     {
-        if ($contentId == -1) {
+        if ($contentId == "") {
             $contentId = get_queried_object()->term_id;
         }
 
@@ -65,11 +65,12 @@ class RevSliderIntegration_MetaTaxonomy extends RevSliderIntegration_Meta
 
         <tr class="form-field">
             <th><label
-                for="revsliderintegration-taxonomy-sliderselector"><?= __('Header Slider', 'RevSliderThemeIntegration') ?></label></th>
+                        for="revsliderintegration-taxonomy-sliderselector"><?= __('Header Slider', 'RevSliderThemeIntegration') ?></label>
+            </th>
             <td><select id="revsliderintegration-taxonomy-sliderselector" name="<?= self::POST_QUERY ?>">
                     <option value=""><?= __('Default', 'RevSliderThemeIntegration') ?></option>
                     <?php foreach ($slider->get_sliders() as $s): ?>
-                        <option value="<?= $s->get_id() ?>" <?= (($s->get_id() == get_term_meta($term->ID, self::TERM_META, true)) ? 'selected' : '') ?>><?= $s->get_title() ?></option>
+                        <option value="<?= $s->get_id() ?>" <?= ($s->get_id() == get_term_meta($term->ID, self::TERM_META, true)) ? 'selected' : '' ?>><?= $s->get_title() ?></option>
                     <?php endforeach; ?>
                 </select></td>
         </tr>
@@ -80,7 +81,7 @@ class RevSliderIntegration_MetaTaxonomy extends RevSliderIntegration_Meta
     {
         foreach ($this->getSelectedElements() as $el) {
             add_action($el . '_add_form_fields', [$this, 'formFieldCreate']);
-            add_action($el . '_edit_form_fields', [$this, 'formFieldEdit'], 10, 2);
+            add_action($el . '_edit_form_fields', [$this, 'formFieldEdit'], 1, 2);
         }
     }
 
@@ -97,7 +98,7 @@ class RevSliderIntegration_MetaTaxonomy extends RevSliderIntegration_Meta
 
         foreach ($this->getSelectedElements() as $el) {
             add_action('created_' . $el, [$this, 'saveMeta']);
-            add_action('edited_' . $el, [$this, 'saveMeta']);
+            add_action('edited_' . $el, [$this, 'saveMeta'], 10, 2);
         }
     }
 }
